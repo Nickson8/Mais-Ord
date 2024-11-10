@@ -1,4 +1,5 @@
 #include "../../Alg1/FILA_ENCADEADA/fila.h"
+#include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -232,5 +233,46 @@ void contagem_de_menores(int v[], int tam) {
       ind++;
     }
     v[ind] = aux[i];
+  }
+}
+
+// contagem de tipos
+void counting_sort(int v[], int tam) {
+  int min = INT_MAX;
+  int max = -INT_MAX;
+
+  for (int i = 0; i < tam; i++) {
+    if (v[i] < min) {
+      min = v[i];
+    }
+
+    if (v[i] > max) {
+      max = v[i];
+    }
+  }
+
+  int range = max - min + 1;
+  int offset = 0;
+  if (min < 0) {
+    offset = -min;
+  }
+
+  int tipos[range];
+  memset(tipos, 0, range * sizeof(int));
+
+  for (int i = 0; i < tam; i++) {
+    tipos[v[i] + offset]++;
+  }
+
+  int ind = 0;
+
+  for (int i = min; i <= max; i++) {
+    if (tipos[i + offset] == 0) {
+      continue;
+    }
+
+    for (int j = 0; j < tipos[i + offset]; j++) {
+      v[ind++] = i;
+    }
   }
 }
