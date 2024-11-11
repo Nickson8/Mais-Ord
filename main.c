@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 void swap(int *xp, int *yp) {
   int temp = *xp;
@@ -276,3 +277,49 @@ void counting_sort(int v[], int tam) {
     }
   }
 }
+
+int sort_eval_tam(int (*sort_func_tam)(int *, int), int v[], int tam) {
+  clock_t start = clock();
+  sort_func_tam(v, tam);
+  clock_t end = clock();
+
+  return ((end - start) * 1000) / CLOCKS_PER_SEC;
+}
+
+int sort_eval_inf_sup(int (*sort_func_inf_sup)(int *, int, int), int v[],
+                      int inf, int sup) {
+  clock_t start = clock();
+  sort_func_inf_sup(v, inf, sup);
+  clock_t end = clock();
+
+  return ((end - start) * 1000) / CLOCKS_PER_SEC;
+}
+
+int *gerar_ordenado(int tam) {
+  int *v = malloc(tam * sizeof(int));
+  for (int i = 0; i < tam; i++) {
+    v[i] = i;
+  }
+
+  return v;
+}
+
+int *gerar_reverso(int tam) {
+  int *v = malloc(tam * sizeof(int));
+  for (int i = 0; i < tam; i++) {
+    v[i] = tam - i;
+  }
+
+  return v;
+}
+
+int *gerar_aleatorio(int tam) {
+  int *v = malloc(tam * sizeof(int));
+  for (int i = 0; i < tam; i++) {
+    v[i] = tam - i;
+  }
+
+  return v;
+}
+
+int main(void) {}
