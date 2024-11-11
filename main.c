@@ -1,5 +1,6 @@
 #include "../../Alg1/FILA_ENCADEADA/fila.h"
 #include <limits.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -278,6 +279,51 @@ void counting_sort(int v[], int tam) {
   }
 }
 
+void new_and_improved_radix_sort(int v[], int tam) {
+  int max = -INT_MAX;
+
+  for (int i = 0; i < tam; i++) { // acha o maior numero
+    if (v[i] > max) {
+      max = v[i];
+    }
+  }
+
+  int m_max = log10((double)max); // pega a ordem 10 dele
+  printf("m_max: %i\n", m_max);
+
+  for (int i = 0; i <= m_max; i++) { // iterar para cada DIT
+    printf("i: %i\n", i);
+    int digitos[10];
+    memset(digitos, 0, 10 * sizeof(int));
+
+    for (int j = 0; j < tam; j++) { // contar digitos
+      int dig = digito(v[j], i);
+      digitos[dig]++;
+    }
+
+    int aux[tam];
+    memcpy(aux, v, tam * sizeof(int));
+    for (int j = 1; j < 10; j++) {
+      digitos[j] += digitos[j - 1];
+    }
+
+    for (int j = tam - 1; j >= 0; j--) {
+      int dig = digito(aux[j], i);
+      if (digitos[dig] == 0) {
+        continue;
+      }
+
+      v[digitos[dig] - 1] = aux[j];
+      digitos[dig]--;
+    }
+
+    for (int i = 0; i < tam; i++) {
+      printf("%i ", v[i]);
+    }
+    printf("\n");
+  }
+}
+
 int sort_eval_tam(int (*sort_func_tam)(int *, int), int v[], int tam) {
   clock_t start = clock();
   sort_func_tam(v, tam);
@@ -316,10 +362,25 @@ int *gerar_reverso(int tam) {
 int *gerar_aleatorio(int tam) {
   int *v = malloc(tam * sizeof(int));
   for (int i = 0; i < tam; i++) {
-    v[i] = tam - i;
+    v[i] = rand() * tam;
   }
 
   return v;
 }
 
-int main(void) {}
+int main(void) {
+  int v[] = {4, 5, 16, 89, 2, 3, 5, 7, 344, 5, 9, 10, 12, 45, 33};
+  int tam = 15;
+
+  for (int i = 0; i < tam; i++) {
+    printf("%i ", v[i]);
+  }
+  printf("\n");
+
+  new_and_improved_radix_sort(v, tam);
+
+  for (int i = 0; i < tam; i++) {
+    printf("%i ", v[i]);
+  }
+  printf("\n");
+}
