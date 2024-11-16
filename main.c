@@ -1,4 +1,4 @@
-#include "../../Alg1/FILA_ENCADEADA/fila.h"
+/* #include "../../Alg1/FILA_ENCADEADA/fila.h" */
 #include <limits.h>
 #include <math.h>
 #include <stdbool.h>
@@ -14,14 +14,16 @@ void swap(int *xp, int *yp) {
 }
 
 // An optimized version of Bubble Sort
-void bubbleSort(int arr[], int n) {
+void bubbleSort(int arr[], int n, long long int *swaps, long long int *comps) {
   int i, j;
   bool swapped;
   for (i = 0; i < n - 1; i++) {
     swapped = false;
     for (j = 0; j < n - i - 1; j++) {
+      (*comps)++;
       if (arr[j] > arr[j + 1]) {
         swap(&arr[j], &arr[j + 1]);
+        (*swaps)++;
         swapped = true;
       }
     }
@@ -178,39 +180,39 @@ int digito(int n, int m) {
   return n % 10;
 }
 
-void radix_sort(int v[], int tam) {
-
-  FILA *f[10];
-
-  for (int i = 0; i < 10; i++) {
-    f[i] = fila_criar();
-  }
-
-  int maior = -999999;
-  for (int i = 0; i < tam; i++) {
-    if (v[i] > maior)
-      maior = v[i];
-  }
-
-  int m = 1;
-  while (maior / 10 != 0) {
-    m++;
-    maior /= 10;
-  }
-
-  int k;
-  for (int j = 0; j < m; j++) {
-    for (int i = 0; i < tam; i++) {
-      fila_inserir(f[digito(v[i], m)], v[i]);
-    }
-
-    k = 0;
-    for (int i = 0; i < tam; i++) {
-      while (!fila_vazia(f[i]))
-        v[k++] = fila_remover(f[i]);
-    }
-  }
-}
+/* void radix_sort(int v[], int tam) { */
+/**/
+/*   FILA *f[10]; */
+/**/
+/*   for (int i = 0; i < 10; i++) { */
+/*     f[i] = fila_criar(); */
+/*   } */
+/**/
+/*   int maior = -999999; */
+/*   for (int i = 0; i < tam; i++) { */
+/*     if (v[i] > maior) */
+/*       maior = v[i]; */
+/*   } */
+/**/
+/*   int m = 1; */
+/*   while (maior / 10 != 0) { */
+/*     m++; */
+/*     maior /= 10; */
+/*   } */
+/**/
+/*   int k; */
+/*   for (int j = 0; j < m; j++) { */
+/*     for (int i = 0; i < tam; i++) { */
+/*       fila_inserir(f[digito(v[i], m)], v[i]); */
+/*     } */
+/**/
+/*     k = 0; */
+/*     for (int i = 0; i < tam; i++) { */
+/*       while (!fila_vazia(f[i])) */
+/*         v[k++] = fila_remover(f[i]); */
+/*     } */
+/*   } */
+/* } */
 
 // contagem de menores
 void contagem_de_menores(int v[], int tam) {
@@ -303,7 +305,8 @@ void new_and_improved_radix_sort(int v[], int tam) {
 
     int aux[tam];
     memcpy(aux, v, tam * sizeof(int));
-    for (int j = 1; j < 10; j++) {
+
+    for (int j = 1; j < 10; j++) { // acumular numero de digitos previos
       digitos[j] += digitos[j - 1];
     }
 
@@ -324,21 +327,24 @@ void new_and_improved_radix_sort(int v[], int tam) {
   }
 }
 
-int sort_eval_tam(int (*sort_func_tam)(int *, int), int v[], int tam) {
+float sort_eval_tam(void (*sort_func_tam)(int *, int, long long int *,
+                                          long long int *),
+                    int v[], int tam, long long int *swaps,
+                    long long int *comps) {
   clock_t start = clock();
-  sort_func_tam(v, tam);
+  sort_func_tam(v, tam, swaps, comps);
   clock_t end = clock();
 
-  return ((end - start) * 1000) / CLOCKS_PER_SEC;
+  return (((float)end - start)) / CLOCKS_PER_SEC;
 }
 
-int sort_eval_inf_sup(int (*sort_func_inf_sup)(int *, int, int), int v[],
-                      int inf, int sup) {
+float sort_eval_inf_sup(void (*sort_func_inf_sup)(int *, int, int), int v[],
+                        int inf, int sup) {
   clock_t start = clock();
   sort_func_inf_sup(v, inf, sup);
   clock_t end = clock();
 
-  return ((end - start) * 1000) / CLOCKS_PER_SEC;
+  return (((float)end - start)) / CLOCKS_PER_SEC;
 }
 
 int *gerar_ordenado(int tam) {
@@ -362,25 +368,76 @@ int *gerar_reverso(int tam) {
 int *gerar_aleatorio(int tam) {
   int *v = malloc(tam * sizeof(int));
   for (int i = 0; i < tam; i++) {
-    v[i] = rand() * tam;
+    v[i] = rand() % tam;
   }
 
   return v;
 }
 
 int main(void) {
-  int v[] = {4, 5, 16, 89, 2, 3, 5, 7, 344, 5, 9, 10, 12, 45, 33};
-  int tam = 15;
+  void (*func_tam)(int *, int, long long int *, long long int *) = &bubbleSort;
+  const char *sortname = "bubblesort";
 
-  for (int i = 0; i < tam; i++) {
-    printf("%i ", v[i]);
+  char filename[100];
+  sprintf(filename, "%sdata_ord.csv", sortname);
+  FILE *data = fopen(filename, "w");
+  fprintf(data, "n, time, comps, swaps\n");
+
+  for (int size = 100; size <= 100000; size *= 10) {
+    long long int swaps = 0;
+    long long int comps = 0;
+
+    int *v = gerar_ordenado(size);
+    float delta = sort_eval_tam(func_tam, v, size, &swaps, &comps);
+
+    free(v);
+    printf(
+        "%s sorted a reversed array with %i elements in %f seconds with %lli "
+        "comparisons and %lli swaps\n",
+        sortname, size, delta, comps, swaps);
+    fprintf(data, "%i, %f, %lli, %lli\n", size, delta, comps, swaps);
   }
-  printf("\n");
+  printf("\n\n");
+  fclose(data);
 
-  new_and_improved_radix_sort(v, tam);
+  sprintf(filename, "%sdata_rev.csv", sortname);
+  data = fopen(filename, "w");
+  fprintf(data, "n, time, comps, swaps\n");
 
-  for (int i = 0; i < tam; i++) {
-    printf("%i ", v[i]);
+  for (int size = 100; size <= 100000; size *= 10) {
+    long long int swaps = 0;
+    long long int comps = 0;
+
+    int *v = gerar_reverso(size);
+    float delta = sort_eval_tam(func_tam, v, size, &swaps, &comps);
+
+    free(v);
+    printf(
+        "%s sorted a reversed array with %i elements in %f seconds with %lli "
+        "comparisons and %lli swaps\n",
+        sortname, size, delta, comps, swaps);
+    fprintf(data, "%i, %f, %lli, %lli\n", size, delta, comps, swaps);
   }
-  printf("\n");
+  printf("\n\n");
+  fclose(data);
+
+  sprintf(filename, "%sdata_rnd.csv", sortname);
+  data = fopen(filename, "w");
+  fprintf(data, "n, time, comps, swaps\n");
+
+  for (int size = 100; size <= 100000; size *= 10) {
+    long long int swaps = 0;
+    long long int comps = 0;
+
+    int *v = gerar_aleatorio(size);
+    float delta = sort_eval_tam(func_tam, v, size, &swaps, &comps);
+
+    free(v);
+    printf(
+        "%s sorted a reversed array with %i elements in %f seconds with %lli "
+        "comparisons and %lli swaps\n",
+        sortname, size, delta, comps, swaps);
+    fprintf(data, "%i, %f, %lli, %lli\n", size, delta, comps, swaps);
+  }
+  fclose(data);
 }
