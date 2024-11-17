@@ -439,12 +439,12 @@ bool test_sort(int *v, int tam) {
 
 int main(void) {
   void (*func_tam)(int *, int, long long int *, long long int *) =
-      &new_and_improved_radix_sort;
+      &bubbleSort;
   /* void (*func_inf_sup)(int *, int, int, long long int *, long long int *) =
    */
   /*     &merge_sort; */
 
-  const char *sortname = "radix_test";
+  const char *sortname = "bubble_test";
 
   int *(*vec_gen[3])(int) = {&gerar_ordenado, &gerar_reverso, &gerar_aleatorio};
   char *order_type[3] = {"ordered", "reversed", "randomized"};
@@ -461,15 +461,28 @@ int main(void) {
       long long int swaps = 0;
       long long int comps = 0;
 
-      int *v = vec_gen[k](size);
+      int *v;
+      bool r = true;
+      float delta = 0;
+      for(int _=0; _<5 && r; _++){
 
-      float delta = sort_eval_tam(func_tam, v, size, &swaps, &comps);
-      /* float delta = */
-      /*     sort_eval_inf_sup(func_inf_sup, v, 0, size - 1, &swaps, &comps); */
+        v = vec_gen[k](size);
 
-      if (!test_sort(v, size)) {
-        printf("%s failed to sort an array with %i elements", sortname, size);
-        return 0;
+        delta += sort_eval_tam(func_tam, v, size, &swaps, &comps);
+        /* float delta = */
+        /*     sort_eval_inf_sup(func_inf_sup, v, 0, size - 1, &swaps, &comps); */
+
+        if (!test_sort(v, size)) {
+          printf("%s failed to sort an array with %i elements", sortname, size);
+          return 0;
+        }
+        if(strcmp(order_type[k], "randomized")) r = false;
+
+      }
+      if(r){
+        delta /= 5;
+        swaps /= 5;
+        comps /= 5;
       }
 
       free(v);
