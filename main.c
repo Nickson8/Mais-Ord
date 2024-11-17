@@ -99,9 +99,18 @@ void shell_sort(int v[], int n, long long int *swaps, long long int *comps) {
   }
 }
 
+int medianaDeTres(int v[], int ini, int fim) {
+  int a=v[ini], b=v[fim], c=v[(ini+fim)/2];
+  if ((a > b && a < c) || (a > c && a < b))
+      return a;
+  else if ((b > a && b < c) || (b > c && b < a))
+      return b;
+  else
+      return c;
+}
 void quick_sort(int v[], int ini, int fim, long long int *swaps,
                 long long int *comps) {
-  int pivo = v[(ini + fim) / 2];
+  int pivo = medianaDeTres(v, ini, fim);
   int i = ini, j = fim;
 
   do {
