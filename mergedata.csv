@@ -1,0 +1,4 @@
+order, n, time, comps, swaps
+ordered, 100, 0.000009, 0, 0
+ordered, 1000, 0.000062, 0, 0
+ordered, 10000, 0.000758, 0, 0
