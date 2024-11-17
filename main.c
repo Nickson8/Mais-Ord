@@ -443,77 +443,45 @@ int main(void) {
   /* void (*func_inf_sup)(int *, int, int, long long int *, long long int *) =
    */
   /*     &merge_sort; */
-  const char *sortname = "radix";
+
+  const char *sortname = "radix_test";
+
+  int *(*vec_gen[3])(int) = {&gerar_ordenado, &gerar_reverso, &gerar_aleatorio};
+  char *order_type[3] = {"ordered", "reversed", "randomized"};
 
   char filename[100];
   sprintf(filename, "%sdata.csv", sortname);
+
   FILE *data = fopen(filename, "w");
   fprintf(data, "order, n, time, comps, swaps\n");
 
-  for (int size = 100; size <= 100000; size *= 10) {
-    long long int swaps = 0;
-    long long int comps = 0;
+  for (int k = 0; k < 3; k++) {
 
-    int *v = gerar_ordenado(size);
-    float delta = sort_eval_tam(func_tam, v, size, &swaps, &comps);
-    /* float delta = */
-    /*     sort_eval_inf_sup(func_inf_sup, v, 0, size - 1, &swaps, &comps); */
-    if (!test_sort(v, size)) {
-      printf("%s failed to sort an array with %i elements", sortname, size);
-      return 0;
+    for (int size = 100; size <= 100000; size *= 10) {
+      long long int swaps = 0;
+      long long int comps = 0;
+
+      int *v = vec_gen[k](size);
+
+      float delta = sort_eval_tam(func_tam, v, size, &swaps, &comps);
+      /* float delta = */
+      /*     sort_eval_inf_sup(func_inf_sup, v, 0, size - 1, &swaps, &comps); */
+
+      if (!test_sort(v, size)) {
+        printf("%s failed to sort an array with %i elements", sortname, size);
+        return 0;
+      }
+
+      free(v);
+
+      printf("%s sorted an %s array with %i elements in %f seconds with %lli "
+             "comparisons and %lli swaps\n",
+             order_type[k], sortname, size, delta, comps, swaps);
+
+      fprintf(data, "%s, %i, %f, %lli, %lli\n", order_type[k], size, delta,
+              comps, swaps);
     }
-
-    free(v);
-    printf(
-        "%s sorted an ordered array with %i elements in %f seconds with %lli "
-        "comparisons and %lli swaps\n",
-        sortname, size, delta, comps, swaps);
-    fprintf(data, "ordered, %i, %f, %lli, %lli\n", size, delta, comps, swaps);
-  }
-  printf("\n\n");
-
-  for (int size = 100; size <= 100000; size *= 10) {
-    long long int swaps = 0;
-    long long int comps = 0;
-
-    int *v = gerar_reverso(size);
-    float delta = sort_eval_tam(func_tam, v, size, &swaps, &comps);
-    /* float delta = */
-    /*     sort_eval_inf_sup(func_inf_sup, v, 0, size - 1, &swaps, &comps); */
-    if (!test_sort(v, size)) {
-      printf("%s failed to sort an array with %i elements", sortname, size);
-      return 0;
-    }
-
-    free(v);
-    printf(
-        "%s sorted a reversed array with %i elements in %f seconds with %lli "
-        "comparisons and %lli swaps\n",
-        sortname, size, delta, comps, swaps);
-    fprintf(data, "reversed, %i, %f, %lli, %lli\n", size, delta, comps, swaps);
-  }
-  printf("\n\n");
-
-  for (int size = 100; size <= 100000; size *= 10) {
-    long long int swaps = 0;
-    long long int comps = 0;
-
-    int *v = gerar_aleatorio(size);
-    float delta = sort_eval_tam(func_tam, v, size, &swaps, &comps);
-    /* float delta = */
-    /*     sort_eval_inf_sup(func_inf_sup, v, 0, size - 1, &swaps, &comps); */
-    if (!test_sort(v, size)) {
-      printf("%s failed to sort an array with %i elements", sortname, size);
-      return 0;
-    }
-
-    free(v);
-    printf(
-        "%s sorted a randomized array with %i elements in %f seconds with %lli "
-        "comparisons and %lli swaps\n",
-        sortname, size, delta, comps, swaps);
-    fprintf(data, "randomized, %i, %f, %lli, %lli\n", size, delta, comps,
-            swaps);
+    printf("\n\n");
   }
   fclose(data);
 }
