@@ -14,7 +14,7 @@ void swap(int *xp, int *yp) {
 }
 
 // An optimized version of Bubble Sort
-void bubbleSort(int arr[], int n, long long int *swaps, long long int *comps) {
+void bubbleSort(int *arr, int n, long long int *swaps, long long int *comps) {
   int i, j;
   bool swapped;
   for (i = 0; i < n - 1; i++) {
@@ -30,6 +30,7 @@ void bubbleSort(int arr[], int n, long long int *swaps, long long int *comps) {
 
     // If no two elements were swapped by inner loop,
     // then break
+
     if (swapped == false)
       break;
   }
@@ -56,94 +57,126 @@ void selecao_direta(int v[], int n, long long int *swaps,
 void insertion_sort(int v[], int n, long long int *swaps,
                     long long int *comps) {
   int i, j, aux;
-  for (int i = 1; i < n; i++) {
+  for (i = 1; i < n; i++) {
     aux = v[i];
-    (*comps)++;
-    for (int j = i - 1; j >= 0 && aux < v[j]; j--) {
-      if (v[j + 1] > v[j]) {
+    for (j = i - 1; j >= 0; j--) {
+      (*comps)++;
+      if (v[j] > aux) {
         v[j + 1] = v[j];
         (*swaps)++;
+      } else {
+        break;
       }
-      (*comps)++;
     }
-    v[j + 1] = aux;
+    if (j != i - 1) {
+      v[j + 1] = aux;
+      (*swaps)++;
+    }
   }
 }
 
-void shell_sort(int v[], int n, int incrementos[], int n_inc) {
+void shell_sort(int v[], int n, long long int *swaps, long long int *comps) {
+  int incrementos[] = {5, 3, 1};
+  int n_inc = 3;
+
   int inc, i, j, aux;
   for (inc = 0; inc < n_inc; inc++) {
     int h = incrementos[inc];
-    for (int i = h; i < n; i++) {
+    for (i = h; i < n; i++) {
       aux = v[i];
-      for (int j = i - h; j >= 0 && aux < v[j]; j -= h) {
-        v[j + h] = v[j];
+      for (j = i - h; j >= 0 && aux < v[j]; j -= h) {
+        (*comps)++;
+        if (v[j] > aux) {
+          v[j + h] = v[j];
+          (*swaps)++;
+        }
       }
-      v[j + h] = aux;
+      if (j != i - h) {
+        (*swaps)++;
+        v[j + h] = aux;
+      }
     }
   }
 }
 
-void quick_sort(int v[], int ini, int fim) {
+void quick_sort(int v[], int ini, int fim, long long int *swaps,
+                long long int *comps) {
   int pivo = v[(ini + fim) / 2];
   int i = ini, j = fim;
 
   do {
-    while (v[i] < pivo)
+    (*comps)++;
+    while (v[i] < pivo) {
+      (*comps)++;
       i++;
-    while (v[j] > pivo)
+    }
+    while (v[j] > pivo) {
+      (*comps)++;
       j--;
+    }
 
+    (*comps)++;
     if (i <= j) {
+      (*swaps)++;
       swap(&v[i], &v[j]);
       i++;
       j--;
     }
 
   } while (i < j);
-
+  (*comps)++;
   if (j > ini)
-    quick_sort(v, ini, j);
+    quick_sort(v, ini, j, swaps, comps);
+  (*comps)++;
   if (i < fim)
-    quick_sort(v, i, fim);
+    quick_sort(v, i, fim, swaps, comps);
 }
 
-void rearranjar_heap(int v[], int i, int tamanho_do_heap) {
+void rearranjar_heap(int v[], int i, int tamanho_do_heap, long long int *swaps,
+                     long long int *comps) {
   int esq, dir, maior, aux;
   esq = 2 * i + 1;
   dir = 2 * i + 2;
+  (*comps)++;
   if ((esq < tamanho_do_heap) && (v[esq] > v[i]))
     maior = esq;
   else
     maior = i;
+  (*comps)++;
   if ((dir < tamanho_do_heap) && (v[dir] > v[maior]))
     maior = dir;
+
   if (maior != i) {
+    (*swaps)++;
     aux = v[i];
     v[i] = v[maior];
     v[maior] = aux;
-    rearranjar_heap(v, maior, tamanho_do_heap);
+    rearranjar_heap(v, maior, tamanho_do_heap, swaps, comps);
   }
 }
 
-void construir_heap(int v[], int tam) {
+void construir_heap(int v[], int tam, long long int *swaps,
+                    long long int *comps) {
   for (int i = (tam / 2) - 1; i >= 0; i--) {
-    rearranjar_heap(v, i, tam);
+    rearranjar_heap(v, i, tam, swaps, comps);
   }
 }
 
-void heap_sort(int v[], int tam) {
-  construir_heap(v, tam);
+void heap_sort(int v[], int tam, long long int *swaps, long long int *comps) {
+  construir_heap(v, tam, swaps, comps);
   swap(&v[0], &v[tam - 1]);
+  (*swaps)++;
   tam--;
-  for (int i = 0; i < tam; i++) {
-    rearranjar_heap(v, 0, tam);
+  for (int i = tam - 1; i > 0; i--) {
+    rearranjar_heap(v, 0, tam, swaps, comps);
+    (*swaps)++;
     swap(&v[0], &v[tam - 1]);
     tam--;
   }
 }
 
-void intercala(int v[], int ini, int meio, int fim) {
+void intercala(int v[], int ini, int meio, int fim, long long int *swaps,
+               long long int *comps) {
   int i, j, k, n1, n2;
 
   // calculando tamanho dos subarranjos
@@ -156,30 +189,35 @@ void intercala(int v[], int ini, int meio, int fim) {
   // iniciando subarranjos a partir de v
   for (i = 0; i < n1; i++)
     L[i] = v[ini + i];
-  L[n1] = 9999; // inserindo sentinela
+  L[n1] = 9999999; // inserindo sentinela
 
   for (j = 0; j < n2; j++)
     R[j] = v[meio + j + 1];
-  R[n2] = 9999; // inserindo sentinela
+  R[n2] = 9999999; // inserindo sentinela
 
   // intercalando arranjos
   i = j = 0;
-  for (k = ini; k <= fim; k++)
+  for (k = ini; k <= fim; k++) {
+    (*comps)++;
     if (L[i] <= R[j]) {
       v[k] = L[i];
       i++;
+      (*swaps)++;
     } else {
       v[k] = R[j];
       j++;
+      (*swaps)++;
     }
+  }
 }
 
-void merge_sort(int v[], int ini, int fim) {
+void merge_sort(int v[], int ini, int fim, long long int *swaps,
+                long long int *comps) {
   int meio = (ini + fim) / 2;
   if (ini < fim) { // existe mais de 1 elemento
-    merge_sort(v, ini, meio);
-    merge_sort(v, meio + 1, fim);
-    intercala(v, ini, meio, fim);
+    merge_sort(v, ini, meio, swaps, comps);
+    merge_sort(v, meio + 1, fim, swaps, comps);
+    intercala(v, ini, meio, fim, swaps, comps);
   }
 }
 
@@ -226,12 +264,14 @@ int digito(int n, int m) {
 /* } */
 
 // contagem de menores
-void contagem_de_menores(int v[], int tam) {
+void contagem_de_menores(int v[], int tam, long long int *swaps,
+                         long long int *comps) {
   int cont[tam];
   memset(cont, 0, tam * sizeof(int));
 
   for (int i = 0; i < tam; i++) {
     for (int j = 0; j < tam; j++) {
+      (*comps)++;
       if (v[j] < v[i]) {
         cont[i]++;
       }
@@ -292,7 +332,8 @@ void counting_sort(int v[], int tam) {
   }
 }
 
-void new_and_improved_radix_sort(int v[], int tam) {
+void new_and_improved_radix_sort(int v[], int tam, long long int *swaps,
+                                 long long int *comps) {
   int max = -INT_MAX;
 
   for (int i = 0; i < tam; i++) { // acha o maior numero
@@ -302,10 +343,8 @@ void new_and_improved_radix_sort(int v[], int tam) {
   }
 
   int m_max = log10((double)max); // pega a ordem 10 dele
-  printf("m_max: %i\n", m_max);
 
   for (int i = 0; i <= m_max; i++) { // iterar para cada DIT
-    printf("i: %i\n", i);
     int digitos[10];
     memset(digitos, 0, 10 * sizeof(int));
 
@@ -330,11 +369,6 @@ void new_and_improved_radix_sort(int v[], int tam) {
       v[digitos[dig] - 1] = aux[j];
       digitos[dig]--;
     }
-
-    for (int i = 0; i < tam; i++) {
-      printf("%i ", v[i]);
-    }
-    printf("\n");
   }
 }
 
@@ -349,10 +383,13 @@ float sort_eval_tam(void (*sort_func_tam)(int *, int, long long int *,
   return (((float)end - start)) / CLOCKS_PER_SEC;
 }
 
-float sort_eval_inf_sup(void (*sort_func_inf_sup)(int *, int, int), int v[],
-                        int inf, int sup) {
+float sort_eval_inf_sup(void (*sort_func_inf_sup)(int *, int, int,
+                                                  long long int *,
+                                                  long long int *),
+                        int v[], int inf, int sup, long long int *swaps,
+                        long long int *comps) {
   clock_t start = clock();
-  sort_func_inf_sup(v, inf, sup);
+  sort_func_inf_sup(v, inf, sup, swaps, comps);
   clock_t end = clock();
 
   return (((float)end - start)) / CLOCKS_PER_SEC;
@@ -385,10 +422,28 @@ int *gerar_aleatorio(int tam) {
   return v;
 }
 
+bool test_sort(int *v, int tam) {
+  for (int i = 0; i < tam - 1; i++) {
+    if (v[i] > v[i + 1]) {
+      printf("%i larger than %i???\n", v[i], v[i + 1]);
+      for (int j = 0; j < tam; j++) {
+        printf("%i ", v[j]);
+      }
+      printf("\n");
+      return false;
+    }
+  }
+
+  return true;
+}
+
 int main(void) {
   void (*func_tam)(int *, int, long long int *, long long int *) =
-      &insertion_sort;
-  const char *sortname = "insertion";
+      &new_and_improved_radix_sort;
+  /* void (*func_inf_sup)(int *, int, int, long long int *, long long int *) =
+   */
+  /*     &merge_sort; */
+  const char *sortname = "radix";
 
   char filename[100];
   sprintf(filename, "%sdata.csv", sortname);
@@ -401,6 +456,12 @@ int main(void) {
 
     int *v = gerar_ordenado(size);
     float delta = sort_eval_tam(func_tam, v, size, &swaps, &comps);
+    /* float delta = */
+    /*     sort_eval_inf_sup(func_inf_sup, v, 0, size - 1, &swaps, &comps); */
+    if (!test_sort(v, size)) {
+      printf("%s failed to sort an array with %i elements", sortname, size);
+      return 0;
+    }
 
     free(v);
     printf(
@@ -417,6 +478,12 @@ int main(void) {
 
     int *v = gerar_reverso(size);
     float delta = sort_eval_tam(func_tam, v, size, &swaps, &comps);
+    /* float delta = */
+    /*     sort_eval_inf_sup(func_inf_sup, v, 0, size - 1, &swaps, &comps); */
+    if (!test_sort(v, size)) {
+      printf("%s failed to sort an array with %i elements", sortname, size);
+      return 0;
+    }
 
     free(v);
     printf(
@@ -433,6 +500,12 @@ int main(void) {
 
     int *v = gerar_aleatorio(size);
     float delta = sort_eval_tam(func_tam, v, size, &swaps, &comps);
+    /* float delta = */
+    /*     sort_eval_inf_sup(func_inf_sup, v, 0, size - 1, &swaps, &comps); */
+    if (!test_sort(v, size)) {
+      printf("%s failed to sort an array with %i elements", sortname, size);
+      return 0;
+    }
 
     free(v);
     printf(
