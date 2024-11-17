@@ -35,25 +35,36 @@ void bubbleSort(int arr[], int n, long long int *swaps, long long int *comps) {
   }
 }
 
-void selecao_direta(int v[], int n) {
+void selecao_direta(int v[], int n, long long int *swaps,
+                    long long int *comps) {
   int menor_i;
-  for (int i = 0; i < n; i++) {
+  for (int i = 0; i < n - 1; i++) {
     menor_i = i;
-    for (int j = i; j < n; j++) {
+    for (int j = i + 1; j < n; j++) {
+      (*comps)++;
       if (v[j] < v[menor_i]) {
         menor_i = j;
       }
     }
-    swap(&v[i], &v[menor_i]);
+    if (i != menor_i) {
+      swap(&v[i], &v[menor_i]);
+      (*swaps)++;
+    }
   }
 }
 
-void insertion_sort(int v[], int n) {
+void insertion_sort(int v[], int n, long long int *swaps,
+                    long long int *comps) {
   int i, j, aux;
   for (int i = 1; i < n; i++) {
     aux = v[i];
+    (*comps)++;
     for (int j = i - 1; j >= 0 && aux < v[j]; j--) {
-      v[j + 1] = v[j];
+      if (v[j + 1] > v[j]) {
+        v[j + 1] = v[j];
+        (*swaps)++;
+      }
+      (*comps)++;
     }
     v[j + 1] = aux;
   }
@@ -375,13 +386,14 @@ int *gerar_aleatorio(int tam) {
 }
 
 int main(void) {
-  void (*func_tam)(int *, int, long long int *, long long int *) = &bubbleSort;
-  const char *sortname = "bubblesort";
+  void (*func_tam)(int *, int, long long int *, long long int *) =
+      &insertion_sort;
+  const char *sortname = "insertion";
 
   char filename[100];
-  sprintf(filename, "%sdata_ord.csv", sortname);
+  sprintf(filename, "%sdata.csv", sortname);
   FILE *data = fopen(filename, "w");
-  fprintf(data, "n, time, comps, swaps\n");
+  fprintf(data, "order, n, time, comps, swaps\n");
 
   for (int size = 100; size <= 100000; size *= 10) {
     long long int swaps = 0;
@@ -392,17 +404,12 @@ int main(void) {
 
     free(v);
     printf(
-        "%s sorted a reversed array with %i elements in %f seconds with %lli "
+        "%s sorted an ordered array with %i elements in %f seconds with %lli "
         "comparisons and %lli swaps\n",
         sortname, size, delta, comps, swaps);
-    fprintf(data, "%i, %f, %lli, %lli\n", size, delta, comps, swaps);
+    fprintf(data, "ordered, %i, %f, %lli, %lli\n", size, delta, comps, swaps);
   }
   printf("\n\n");
-  fclose(data);
-
-  sprintf(filename, "%sdata_rev.csv", sortname);
-  data = fopen(filename, "w");
-  fprintf(data, "n, time, comps, swaps\n");
 
   for (int size = 100; size <= 100000; size *= 10) {
     long long int swaps = 0;
@@ -416,14 +423,9 @@ int main(void) {
         "%s sorted a reversed array with %i elements in %f seconds with %lli "
         "comparisons and %lli swaps\n",
         sortname, size, delta, comps, swaps);
-    fprintf(data, "%i, %f, %lli, %lli\n", size, delta, comps, swaps);
+    fprintf(data, "reversed, %i, %f, %lli, %lli\n", size, delta, comps, swaps);
   }
   printf("\n\n");
-  fclose(data);
-
-  sprintf(filename, "%sdata_rnd.csv", sortname);
-  data = fopen(filename, "w");
-  fprintf(data, "n, time, comps, swaps\n");
 
   for (int size = 100; size <= 100000; size *= 10) {
     long long int swaps = 0;
@@ -434,10 +436,11 @@ int main(void) {
 
     free(v);
     printf(
-        "%s sorted a reversed array with %i elements in %f seconds with %lli "
+        "%s sorted a randomized array with %i elements in %f seconds with %lli "
         "comparisons and %lli swaps\n",
         sortname, size, delta, comps, swaps);
-    fprintf(data, "%i, %f, %lli, %lli\n", size, delta, comps, swaps);
+    fprintf(data, "randomized, %i, %f, %lli, %lli\n", size, delta, comps,
+            swaps);
   }
   fclose(data);
 }
