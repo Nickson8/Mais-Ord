@@ -209,15 +209,14 @@ void intercala(int v[], int ini, int meio, int fim, long long int *swaps,
   // intercalando arranjos
   i = j = 0;
   for (k = ini; k <= fim; k++) {
-    (*comps)++;
+    if(L[i]!=9999999 && R[j]!=9999999)(*comps)++;
     if (L[i] <= R[j]) {
       v[k] = L[i];
       i++;
-      (*swaps)++;
     } else {
       v[k] = R[j];
       j++;
-      (*swaps)++;
+      if(L[i]!=9999999) (*swaps)++;
     }
   }
 }
@@ -785,11 +784,5 @@ int main(void) {
   }
   fclose(data);
 
-  generate_sorting_metrics_csvs(&bubbleSort, "BubbleSort");
-  generate_sorting_metrics_csvs(&selecao_direta, "Selection");
-  generate_sorting_metrics_csvs(&insertion_sort, "Insertion");
-  generate_sorting_metrics_csvs(&shell_sort, "Shell");
-  generate_sorting_metrics_csvs_if(&quick_sort, "Quick");
-  generate_sorting_metrics_csvs(&heap_sort, "Heap");
-  generate_sorting_metrics_csvs_if(&merge_sort, "Merge");
+  generate_sorting_metrics_csvs(&contagem_de_menores, "Counting");
 }
