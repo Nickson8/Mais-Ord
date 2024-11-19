@@ -1,4 +1,3 @@
-/* #include "../../Alg1/FILA_ENCADEADA/fila.h" */
 #include <limits.h>
 #include <math.h>
 #include <stdbool.h>
@@ -9,13 +8,26 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+
+/******************************************************************************************************/
+
 void swap(int *xp, int *yp) {
   int temp = *xp;
   *xp = *yp;
   *yp = temp;
 }
 
-// An optimized version of Bubble Sort
+/**
+ * O Bubble Sort é um algoritmo simples que percorre o vetor repetidamente, comparando elementos
+ * adjacentes e os trocando de posição, se necessário.
+ * 
+ * @param arr -> vetor que será ordenado
+ * @param n -> tamanho do vetor
+ * @param swaps -> ponteiro que aponta para a variável que irá guardar o número de swaps
+ * @param comps -> ponteiro que aponta para a variável que irá guardar o número de comparações
+ * 
+ * @return -> void
+ */
 void bubbleSort(int *arr, int n, long long int *swaps, long long int *comps) {
   int i, j;
   bool swapped;
@@ -30,14 +42,24 @@ void bubbleSort(int *arr, int n, long long int *swaps, long long int *comps) {
       }
     }
 
-    // If no two elements were swapped by inner loop,
-    // then break
-
     if (swapped == false)
       break;
   }
 }
 
+/******************************************************************************************************/
+
+/**
+ * O Selection Sort funciona selecionando o menor elemento de uma parte do vetor e o movendo para a
+ * posição correta a cada iteração.
+ * 
+ * @param v -> vetor que será ordenado
+ * @param n -> tamanho do vetor
+ * @param swaps -> ponteiro que aponta para a variável que irá guardar o número de swaps
+ * @param comps -> ponteiro que aponta para a variável que irá guardar o número de comparações
+ * 
+ * @return -> void
+ */
 void selecao_direta(int v[], int n, long long int *swaps,
                     long long int *comps) {
   int menor_i;
@@ -56,6 +78,18 @@ void selecao_direta(int v[], int n, long long int *swaps,
   }
 }
 
+/******************************************************************************************************/
+
+/**
+ * O Insertion Sort constrói o vetor ordenado gradualmente, inserindo elementos na posição correta.
+ * 
+ * @param v -> vetor que será ordenado
+ * @param n -> tamanho do vetor
+ * @param swaps -> ponteiro que aponta para a variável que irá guardar o número de swaps
+ * @param comps -> ponteiro que aponta para a variável que irá guardar o número de comparações
+ * 
+ * @return -> void
+ */
 void insertion_sort(int v[], int n, long long int *swaps,
                     long long int *comps) {
   int i, j, aux;
@@ -77,6 +111,20 @@ void insertion_sort(int v[], int n, long long int *swaps,
   }
 }
 
+/******************************************************************************************************/
+
+
+/**
+ * O Shell Sort é uma generalização do Insertion Sort que melhora sua eficiência utilizando trocas
+ * em intervalos maiores (gaps), reduzidos gradativamente.
+ * 
+ * @param v -> vetor que será ordenado
+ * @param n -> tamanho do vetor
+ * @param swaps -> ponteiro que aponta para a variável que irá guardar o número de swaps
+ * @param comps -> ponteiro que aponta para a variável que irá guardar o número de comparações
+ * 
+ * @return -> void
+ */
 void shell_sort(int v[], int n, long long int *swaps, long long int *comps) {
   int incrementos[] = {5, 3, 1};
   int n_inc = 3;
@@ -101,6 +149,10 @@ void shell_sort(int v[], int n, long long int *swaps, long long int *comps) {
   }
 }
 
+
+/******************************************************************************************************/
+
+
 int medianaDeTres(int v[], int ini, int fim) {
   int a=v[ini], b=v[fim], c=v[(ini+fim)/2];
   if ((a > b && a < c) || (a > c && a < b))
@@ -110,6 +162,20 @@ int medianaDeTres(int v[], int ini, int fim) {
   else
       return c;
 }
+
+
+/**
+ * O Quick Sort é um algoritmo de dividir e conquistar que particiona o vetor em dois subvetores em
+ * torno de um pivô e ordena cada um recursivamente. 
+ * 
+ * @param v -> vetor que será ordenado
+ * @param ini -> posição inicial do vetor que está sendo ordenado
+ * @param fim -> posição final do vetor que está sendo ordenado
+ * @param swaps -> ponteiro que aponta para a variável que irá guardar o número de swaps
+ * @param comps -> ponteiro que aponta para a variável que irá guardar o número de comparações
+ * 
+ * @return -> void
+ */
 void quick_sort(int v[], int ini, int fim, long long int *swaps,
                 long long int *comps) {
   int pivo = medianaDeTres(v, ini, fim);
@@ -143,6 +209,10 @@ void quick_sort(int v[], int ini, int fim, long long int *swaps,
     quick_sort(v, i, fim, swaps, comps);
 }
 
+
+/******************************************************************************************************/
+
+
 void rearranjar_heap(int v[], int i, int tamanho_do_heap, long long int *swaps,
                      long long int *comps) {
   int esq, dir, maior, aux;
@@ -173,6 +243,18 @@ void construir_heap(int v[], int tam, long long int *swaps,
   }
 }
 
+
+/**
+ * O Heap Sort utiliza a estrutura de dados Heap (árvore binária completa) para ordenar o vetor,
+ * removendo o maior elemento da heap repetidamente.
+ * 
+ * @param v -> vetor que será ordenado
+ * @param tam -> tamanho do vetor
+ * @param swaps -> ponteiro que aponta para a variável que irá guardar o número de swaps
+ * @param comps -> ponteiro que aponta para a variável que irá guardar o número de comparações
+ * 
+ * @return -> void
+ */
 void heap_sort(int v[], int tam, long long int *swaps, long long int *comps) {
   construir_heap(v, tam, swaps, comps);
   swap(&v[0], &v[tam - 1]);
@@ -185,6 +267,9 @@ void heap_sort(int v[], int tam, long long int *swaps, long long int *comps) {
     tam--;
   }
 }
+
+/******************************************************************************************************/
+
 
 void intercala(int v[], int ini, int meio, int fim, long long int *swaps,
                long long int *comps) {
@@ -221,6 +306,19 @@ void intercala(int v[], int ini, int meio, int fim, long long int *swaps,
   }
 }
 
+
+/**
+ * O Merge Sort é um algoritmo de dividir e conquistar que divide o vetor ao meio, ordena as partes
+ * recursivamente e as intercala. 
+ * 
+ * @param v -> vetor que será ordenado
+ * @param ini -> posição inicial do vetor que está sendo ordenado
+ * @param fim -> posição final do vetor que está sendo ordenado
+ * @param swaps -> ponteiro que aponta para a variável que irá guardar o número de swaps
+ * @param comps -> ponteiro que aponta para a variável que irá guardar o número de comparações
+ * 
+ * @return -> void
+ */
 void merge_sort(int v[], int ini, int fim, long long int *swaps,
                 long long int *comps) {
   int meio = (ini + fim) / 2;
@@ -231,6 +329,10 @@ void merge_sort(int v[], int ini, int fim, long long int *swaps,
   }
 }
 
+
+/******************************************************************************************************/
+
+
 int digito(int n, int m) {
   for (int i = 0; i < m; i++) {
     n = n / 10;
@@ -239,41 +341,18 @@ int digito(int n, int m) {
   return n % 10;
 }
 
-/* void radix_sort(int v[], int tam) { */
-/**/
-/*   FILA *f[10]; */
-/**/
-/*   for (int i = 0; i < 10; i++) { */
-/*     f[i] = fila_criar(); */
-/*   } */
-/**/
-/*   int maior = -999999; */
-/*   for (int i = 0; i < tam; i++) { */
-/*     if (v[i] > maior) */
-/*       maior = v[i]; */
-/*   } */
-/**/
-/*   int m = 1; */
-/*   while (maior / 10 != 0) { */
-/*     m++; */
-/*     maior /= 10; */
-/*   } */
-/**/
-/*   int k; */
-/*   for (int j = 0; j < m; j++) { */
-/*     for (int i = 0; i < tam; i++) { */
-/*       fila_inserir(f[digito(v[i], m)], v[i]); */
-/*     } */
-/**/
-/*     k = 0; */
-/*     for (int i = 0; i < tam; i++) { */
-/*       while (!fila_vazia(f[i])) */
-/*         v[k++] = fila_remover(f[i]); */
-/*     } */
-/*   } */
-/* } */
 
-// contagem de menores
+/**
+ * O algoritmo Contagem dos Menores conta quantos elementos no vetor são menores que cada elemento e
+ * usa essa informação para colocá-los na posição correta. 
+ * 
+ * @param v -> vetor que será ordenado
+ * @param tam -> tamanho do vetor
+ * @param swaps -> ponteiro que aponta para a variável que irá guardar o número de swaps
+ * @param comps -> ponteiro que aponta para a variável que irá guardar o número de comparações
+ * 
+ * @return -> void
+ */
 void contagem_de_menores(int v[], int tam, long long int *swaps,
                          long long int *comps) {
   int cont[tam];
@@ -301,48 +380,22 @@ void contagem_de_menores(int v[], int tam, long long int *swaps,
   }
 }
 
-// contagem de tipos
-void counting_sort(int v[], int tam) {
-  int min = INT_MAX;
-  int max = -INT_MAX;
 
-  for (int i = 0; i < tam; i++) {
-    if (v[i] < min) {
-      min = v[i];
-    }
+/******************************************************************************************************/
 
-    if (v[i] > max) {
-      max = v[i];
-    }
-  }
 
-  int range = max - min + 1;
-  int offset = 0;
-  if (min < 0) {
-    offset = -min;
-  }
-
-  int tipos[range];
-  memset(tipos, 0, range * sizeof(int));
-
-  for (int i = 0; i < tam; i++) {
-    tipos[v[i] + offset]++;
-  }
-
-  int ind = 0;
-
-  for (int i = min; i <= max; i++) {
-    if (tipos[i + offset] == 0) {
-      continue;
-    }
-
-    for (int j = 0; j < tipos[i + offset]; j++) {
-      v[ind++] = i;
-    }
-  }
-}
-
-void new_and_improved_radix_sort(int v[], int tam, long long int *swaps,
+/**
+ * O Radix Sort é um algoritmo não baseado em comparações que ordena números inteiros processando cada
+ * dígito separadamente.
+ * 
+ * @param v -> vetor que será ordenado
+ * @param tam -> tamanho do vetor
+ * @param swaps -> ponteiro que aponta para a variável que irá guardar o número de swaps
+ * @param comps -> ponteiro que aponta para a variável que irá guardar o número de comparações
+ * 
+ * @return -> void
+ */
+void radix_sort(int v[], int tam, long long int *swaps,
                                  long long int *comps) {
   int max = -INT_MAX;
 
@@ -382,6 +435,22 @@ void new_and_improved_radix_sort(int v[], int tam, long long int *swaps,
   }
 }
 
+
+/******************************************************************************************************/
+
+
+/**
+ * É uma função que pega outra função como parâmetro, nesse caso é uma função de ordenação, calculando
+ * o tempo de execução dela.
+ * 
+ * @param sort_func_tam -> função de ordenação que recebe o tamanho do vetor para ordena-lo
+ * @param v -> vetor que será ordenado
+ * @param tam -> tamanho do vetor
+ * @param swaps -> ponteiro que aponta para a variável que irá guardar o número de swaps
+ * @param comps -> ponteiro que aponta para a variável que irá guardar o número de comparações
+ * 
+ * @return -> tempo de execução
+ */
 float sort_eval_tam(void (*sort_func_tam)(int *, int, long long int *,
                                           long long int *),
                     int v[], int tam, long long int *swaps,
@@ -393,6 +462,21 @@ float sort_eval_tam(void (*sort_func_tam)(int *, int, long long int *,
   return (((float)end - start)) / CLOCKS_PER_SEC;
 }
 
+
+
+/**
+ * É uma função que pega outra função como parâmetro, nesse caso é uma função de ordenação, calculando
+ * o tempo de execução dela.
+ * 
+ * @param sort_func_inf_sup-> função de ordenação que recebe a posição final e inicial do vetor para ordena-lo
+ * @param v -> vetor que será ordenado
+ * @param ini -> posição inicial do vetor que está sendo ordenado
+ * @param fim -> posição final do vetor que está sendo ordenado
+ * @param swaps -> ponteiro que aponta para a variável que irá guardar o número de swaps
+ * @param comps -> ponteiro que aponta para a variável que irá guardar o número de comparações
+ * 
+ * @return -> tempo de execução
+ */
 float sort_eval_inf_sup(void (*sort_func_inf_sup)(int *, int, int,
                                                   long long int *,
                                                   long long int *),
@@ -405,6 +489,9 @@ float sort_eval_inf_sup(void (*sort_func_inf_sup)(int *, int, int,
   return (((float)end - start)) / CLOCKS_PER_SEC;
 }
 
+/******************************************************************************************************/
+
+
 int *gerar_ordenado(int tam) {
   int *v = malloc(tam * sizeof(int));
   for (int i = 0; i < tam; i++) {
@@ -413,6 +500,7 @@ int *gerar_ordenado(int tam) {
 
   return v;
 }
+
 
 int *gerar_reverso(int tam) {
   int *v = malloc(tam * sizeof(int));
@@ -423,6 +511,7 @@ int *gerar_reverso(int tam) {
   return v;
 }
 
+
 int *gerar_aleatorio(int tam) {
   int *v = malloc(tam * sizeof(int));
   for (int i = 0; i < tam; i++) {
@@ -431,6 +520,7 @@ int *gerar_aleatorio(int tam) {
 
   return v;
 }
+
 
 bool test_sort(int *v, int tam) {
   for (int i = 0; i < tam - 1; i++) {
@@ -447,282 +537,7 @@ bool test_sort(int *v, int tam) {
   return true;
 }
 
-
-/****************************************************************************************************** */
-// Function to create directory if it doesn't exist
-void create_directory(const char* dirname) {
-    #ifdef _WIN32
-        mkdir(dirname);
-    #else
-        mkdir(dirname, 0777);
-    #endif
-}
-
-// Function to create full filepath with directory and prefix
-char* create_filepath(const char* dir, const char* prefix, const char* suffix) {
-    char* filepath = malloc(256 * sizeof(char)); // Allocate space for filepath
-    if (filepath == NULL) return NULL;
-    
-    snprintf(filepath, 256, "%s/%s_%s", dir, prefix, suffix);
-    return filepath;
-}
-
-
-
-
-
-void generate_sorting_metrics_csvs(void (*sort_func)(int*, int, long long int*, long long int*),
-                                 const char* sort_name) {
-    // Create directory for this sorting algorithm
-    char dirname[100];
-    snprintf(dirname, sizeof(dirname), "%s_metrics", sort_name);
-    create_directory(dirname);
-    
-    // Create filepaths
-    char* time_filepath = create_filepath(dirname, sort_name, "time_metrics.csv");
-    char* swap_filepath = create_filepath(dirname, sort_name, "swap_metrics.csv");
-    char* comp_filepath = create_filepath(dirname, sort_name, "comp_metrics.csv");
-    
-    if (!time_filepath || !swap_filepath || !comp_filepath) {
-        printf("Error: Failed to create filepaths\n");
-        return;
-    }
-    
-    // Open the three CSV files
-    FILE *time_file = fopen(time_filepath, "w");
-    FILE *swap_file = fopen(swap_filepath, "w");
-    FILE *comp_file = fopen(comp_filepath, "w");
-    
-    if (!time_file || !swap_file || !comp_file) {
-        printf("Error: Failed to open one or more files\n");
-        free(time_filepath);
-        free(swap_filepath);
-        free(comp_filepath);
-        return;
-    }
-    
-    // Write headers
-    fprintf(time_file, "n,Ordered,Reversed,Randomized\n");
-    fprintf(swap_file, "n,Ordered,Reversed,Randomized\n");
-    fprintf(comp_file, "n,Ordered,Reversed,Randomized\n");
-    
-    // Test sizes from 1 to 100000
-    for (int n = 1; n <= 30000; n+=200) {
-        // Arrays to store metrics for each type
-        float times[3] = {0};
-        long long int swaps[3] = {0};
-        long long int comps[3] = {0};
-        
-        // Test each array type (Ordered, Reversed, Randomized)
-        for (int type = 0; type < 3; type++) {
-            // Reset metrics for this test
-            long long int curr_swaps = 0;
-            long long int curr_comps = 0;
-            float total_time = 0;
-            
-            // For randomized arrays, we'll take an average of 5 runs
-            int num_trials = (type == 2) ? 5 : 1;
-            
-            for (int trial = 0; trial < num_trials; trial++) {
-                // Generate array based on type
-                int* arr;
-                switch (type) {
-                    case 0: // Ordered
-                        arr = gerar_ordenado(n);
-                        break;
-                    case 1: // Reversed
-                        arr = gerar_reverso(n);
-                        break;
-                    case 2: // Randomized
-                        arr = gerar_aleatorio(n);
-                        break;
-                }
-                
-                // Measure sorting time
-                clock_t start = clock();
-                sort_func(arr, n, &curr_swaps, &curr_comps);
-                clock_t end = clock();
-                
-                total_time += ((float)(end - start)) / CLOCKS_PER_SEC;
-                
-                // Verify sort was successful
-                if (!test_sort(arr, n)) {
-                    printf("Error: Sort failed for n=%d, type=%d\n", n, type);
-                    free(arr);
-                    continue;
-                }
-                
-                free(arr);
-            }
-            
-            // Calculate averages for randomized arrays
-            times[type] = total_time / num_trials;
-            swaps[type] = curr_swaps / num_trials;
-            comps[type] = curr_comps / num_trials;
-        }
-        
-        // Write metrics to respective files
-        fprintf(time_file, "%d,%.6f,%.6f,%.6f\n", n, times[0], times[1], times[2]);
-        fprintf(swap_file, "%d,%lld,%lld,%lld\n", n, swaps[0], swaps[1], swaps[2]);
-        fprintf(comp_file, "%d,%lld,%lld,%lld\n", n, comps[0], comps[1], comps[2]);
-        
-        // Print progress update every 1000 iterations
-        if (n % 1000 == 0) {
-            printf("Processed n=%d\n", n);
-        }
-    }
-    
-    // Close files
-    fclose(time_file);
-    fclose(swap_file);
-    fclose(comp_file);
-    
-    // Free allocated memory
-    free(time_filepath);
-    free(swap_filepath);
-    free(comp_filepath);
-    
-    printf("Finished generating CSV files for %s in directory '%s':\n", sort_name, dirname);
-    printf("1. %s_time_metrics.csv - Execution times\n", sort_name);
-    printf("2. %s_swap_metrics.csv - Number of swaps\n", sort_name);
-    printf("3. %s_comp_metrics.csv - Number of comparisons\n", sort_name);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-void generate_sorting_metrics_csvs_if(void (*sort_func)(int*, int, int, long long int*, long long int*),
-                                 const char* sort_name) {
-    // Create directory for this sorting algorithm
-    char dirname[100];
-    snprintf(dirname, sizeof(dirname), "%s_metrics", sort_name);
-    create_directory(dirname);
-    
-    // Create filepaths
-    char* time_filepath = create_filepath(dirname, sort_name, "time_metrics.csv");
-    char* swap_filepath = create_filepath(dirname, sort_name, "swap_metrics.csv");
-    char* comp_filepath = create_filepath(dirname, sort_name, "comp_metrics.csv");
-    
-    if (!time_filepath || !swap_filepath || !comp_filepath) {
-        printf("Error: Failed to create filepaths\n");
-        return;
-    }
-    
-    // Open the three CSV files
-    FILE *time_file = fopen(time_filepath, "w");
-    FILE *swap_file = fopen(swap_filepath, "w");
-    FILE *comp_file = fopen(comp_filepath, "w");
-    
-    if (!time_file || !swap_file || !comp_file) {
-        printf("Error: Failed to open one or more files\n");
-        free(time_filepath);
-        free(swap_filepath);
-        free(comp_filepath);
-        return;
-    }
-    
-    // Write headers
-    fprintf(time_file, "n,Ordered,Reversed,Randomized\n");
-    fprintf(swap_file, "n,Ordered,Reversed,Randomized\n");
-    fprintf(comp_file, "n,Ordered,Reversed,Randomized\n");
-    
-    // Test sizes from 1 to 100000
-    for (int n = 1; n <= 30000; n+=200) {
-        // Arrays to store metrics for each type
-        float times[3] = {0};
-        long long int swaps[3] = {0};
-        long long int comps[3] = {0};
-        
-        // Test each array type (Ordered, Reversed, Randomized)
-        for (int type = 0; type < 3; type++) {
-            // Reset metrics for this test
-            long long int curr_swaps = 0;
-            long long int curr_comps = 0;
-            float total_time = 0;
-            
-            // For randomized arrays, we'll take an average of 5 runs
-            int num_trials = (type == 2) ? 5 : 1;
-            
-            for (int trial = 0; trial < num_trials; trial++) {
-                // Generate array based on type
-                int* arr;
-                switch (type) {
-                    case 0: // Ordered
-                        arr = gerar_ordenado(n);
-                        break;
-                    case 1: // Reversed
-                        arr = gerar_reverso(n);
-                        break;
-                    case 2: // Randomized
-                        arr = gerar_aleatorio(n);
-                        break;
-                }
-                
-                // Measure sorting time
-                clock_t start = clock();
-                sort_func(arr, 0, n - 1, &curr_swaps, &curr_comps);
-                clock_t end = clock();
-                
-                total_time += ((float)(end - start)) / CLOCKS_PER_SEC;
-                
-                // Verify sort was successful
-                if (!test_sort(arr, n)) {
-                    printf("Error: Sort failed for n=%d, type=%d\n", n, type);
-                    free(arr);
-                    continue;
-                }
-                
-                free(arr);
-            }
-            
-            // Calculate averages for randomized arrays
-            times[type] = total_time / num_trials;
-            swaps[type] = curr_swaps / num_trials;
-            comps[type] = curr_comps / num_trials;
-        }
-        
-        // Write metrics to respective files
-        fprintf(time_file, "%d,%.6f,%.6f,%.6f\n", n, times[0], times[1], times[2]);
-        fprintf(swap_file, "%d,%lld,%lld,%lld\n", n, swaps[0], swaps[1], swaps[2]);
-        fprintf(comp_file, "%d,%lld,%lld,%lld\n", n, comps[0], comps[1], comps[2]);
-        
-        // Print progress update every 1000 iterations
-        if (n % 1000 == 0) {
-            printf("Processed n=%d\n", n);
-        }
-    }
-    
-    // Close files
-    fclose(time_file);
-    fclose(swap_file);
-    fclose(comp_file);
-    
-    // Free allocated memory
-    free(time_filepath);
-    free(swap_filepath);
-    free(comp_filepath);
-    
-    printf("Finished generating CSV files for %s in directory '%s':\n", sort_name, dirname);
-    printf("1. %s_time_metrics.csv - Execution times\n", sort_name);
-    printf("2. %s_swap_metrics.csv - Number of swaps\n", sort_name);
-    printf("3. %s_comp_metrics.csv - Number of comparisons\n", sort_name);
-}
-
-
-
-/************************************************************************************************************************************************* */
-
-
-
-
+/******************************************************************************************************/
 
 
 
@@ -731,7 +546,7 @@ int main(void) {
   void (*func_tam)(int *, int, long long int *, long long int *) = &bubbleSort;
   //void (*func_inf_sup)(int *, int, int, long long int *, long long int *) = &quick_sort;
 
-  const char *sortname = "bubble_test";
+  const char *sortname = "bubble";
 
   int *(*vec_gen[3])(int) = {&gerar_ordenado, &gerar_reverso, &gerar_aleatorio};
   char *order_type[3] = {"ordered", "reversed", "randomized"};
@@ -783,6 +598,4 @@ int main(void) {
     printf("\n\n");
   }
   fclose(data);
-
-  generate_sorting_metrics_csvs(&contagem_de_menores, "Counting");
 }
