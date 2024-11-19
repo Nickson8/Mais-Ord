@@ -5,7 +5,7 @@ run:
 	./main
 
 clean:
-	rm ./main *testdata.csv
+	rm ./main *.csv
 
 faz:
 	make clean; make; make run

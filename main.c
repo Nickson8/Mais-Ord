@@ -492,6 +492,13 @@ float sort_eval_inf_sup(void (*sort_func_inf_sup)(int *, int, int,
 /******************************************************************************************************/
 
 
+/**
+ * Gera um vetor ordenado
+ * 
+ * @param tam -> tamanho do vetor a ser gerado
+ * 
+ * @return -> ponteiro para o vetor
+ */
 int *gerar_ordenado(int tam) {
   int *v = malloc(tam * sizeof(int));
   for (int i = 0; i < tam; i++) {
@@ -502,6 +509,13 @@ int *gerar_ordenado(int tam) {
 }
 
 
+/**
+ * Gera um vetor reversamente ordenado
+ * 
+ * @param tam -> tamanho do vetor a ser gerado
+ * 
+ * @return -> ponteiro para o vetor
+ */
 int *gerar_reverso(int tam) {
   int *v = malloc(tam * sizeof(int));
   for (int i = 0; i < tam; i++) {
@@ -512,6 +526,13 @@ int *gerar_reverso(int tam) {
 }
 
 
+/**
+ * Gera um vetor com números aleatórios
+ * 
+ * @param tam -> tamanho do vetor a ser gerado
+ * 
+ * @return -> ponteiro para o vetor
+ */
 int *gerar_aleatorio(int tam) {
   int *v = malloc(tam * sizeof(int));
   for (int i = 0; i < tam; i++) {
@@ -522,6 +543,14 @@ int *gerar_aleatorio(int tam) {
 }
 
 
+/**
+ * Testa se o vetor está ordenado
+ * 
+ * @param v -> vetor a ser testado
+ * @param tam -> tamanho do vetor a ser gerado
+ * 
+ * @return -> True se for ordenado, False caso contrário
+ */
 bool test_sort(int *v, int tam) {
   for (int i = 0; i < tam - 1; i++) {
     if (v[i] > v[i + 1]) {
@@ -540,26 +569,27 @@ bool test_sort(int *v, int tam) {
 /******************************************************************************************************/
 
 
-
-
-int main(void) {
-  void (*func_tam)(int *, int, long long int *, long long int *) = &bubbleSort;
-  //void (*func_inf_sup)(int *, int, int, long long int *, long long int *) = &quick_sort;
-
-  const char *sortname = "bubble";
-
+/**
+ * Gera dados para n = 10, 100, 1.000, 10.000, 100.000, para dada funçao
+ * 
+ * @param sort_func -> função para gerar os dados
+ * @param sortname -> nome da função
+ * 
+ * @return -> void
+ */
+void gerar_dados_func(void (*sort_func)(int *, int, long long int *, long long int *), const char *sortname){
   int *(*vec_gen[3])(int) = {&gerar_ordenado, &gerar_reverso, &gerar_aleatorio};
-  char *order_type[3] = {"ordered", "reversed", "randomized"};
+  char *order_type[3] = {"ordenado", "reverso", "aleatorio"};
 
   char filename[100];
   sprintf(filename, "%sdata.csv", sortname);
 
   FILE *data = fopen(filename, "w");
-  fprintf(data, "order, n, time, comps, swaps\n");
+  fprintf(data, "tipo, n, tempo, comps, swaps\n");
 
   for (int k = 0; k < 3; k++) {
 
-    for (int size = 100; size <= 10000; size *= 10) {
+    for (int size = 100; size <= 100000; size *= 10) {
       long long int swaps = 0;
       long long int comps = 0;
 
@@ -570,14 +600,13 @@ int main(void) {
 
         v = vec_gen[k](size);
 
-        delta += sort_eval_tam(func_tam, v, size, &swaps, &comps);
-        //delta +=sort_eval_inf_sup(func_inf_sup, v, 0, size - 1, &swaps, &comps);
+        delta += sort_eval_tam(sort_func, v, size, &swaps, &comps);
 
         if (!test_sort(v, size)) {
-          printf("%s failed to sort an array with %i elements", sortname, size);
-          return 0;
+          printf("%s falhou ao ordenador um vetor de %i elementos", sortname, size);
+          return;
         }
-        if(strcmp(order_type[k], "randomized")) r = false;
+        if(strcmp(order_type[k], "aleatorio")) r = false;
 
       }
       if(r){
@@ -588,9 +617,9 @@ int main(void) {
 
       free(v);
 
-      printf("%s sorted an %s array with %i elements in %f seconds with %lli "
-             "comparisons and %lli swaps\n",
-             order_type[k], sortname, size, delta, comps, swaps);
+      printf("Vetor %s de %i elementos, ordenado com %s em %f segundos com %lli "
+             "comparacoes e %lli swaps\n",
+             order_type[k], size, sortname, delta, comps, swaps);
 
       fprintf(data, "%s, %i, %f, %lli, %lli\n", order_type[k], size, delta,
               comps, swaps);
@@ -598,4 +627,91 @@ int main(void) {
     printf("\n\n");
   }
   fclose(data);
+  printf("=*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*=\n");
+}
+
+
+
+
+
+
+/**
+ * Gera dados para n = 10, 100, 1.000, 10.000, 100.000, para dada funçao
+ * 
+ * @param sort_func -> função para gerar os dados
+ * @param sortname -> nome da função
+ * 
+ * @return -> void
+ */
+void gerar_dados_func_if(void (*sort_func_if)(int *, int, int, long long int *, long long int *), const char *sortname){
+  int *(*vec_gen[3])(int) = {&gerar_ordenado, &gerar_reverso, &gerar_aleatorio};
+  char *order_type[3] = {"ordenado", "reverso", "aleatorio"};
+
+  char filename[100];
+  sprintf(filename, "%sdata.csv", sortname);
+
+  FILE *data = fopen(filename, "w");
+  fprintf(data, "tipo, n, tempo, comps, swaps\n");
+
+  for (int k = 0; k < 3; k++) {
+
+    for (int size = 100; size <= 100000; size *= 10) {
+      long long int swaps = 0;
+      long long int comps = 0;
+
+      int *v;
+      bool r = true;
+      float delta = 0;
+      for(int _=0; _<5 && r; _++){
+
+        v = vec_gen[k](size);
+
+        delta +=sort_eval_inf_sup(sort_func_if, v, 0, size - 1, &swaps, &comps);
+
+        if (!test_sort(v, size)) {
+          printf("%s falhou ao ordenador um vetor de %i elementos", sortname, size);
+          return;
+        }
+        if(strcmp(order_type[k], "aleatorio")) r = false;
+
+      }
+      if(r){
+        delta /= 5;
+        swaps /= 5;
+        comps /= 5;
+      }
+
+      free(v);
+
+      printf("Vetor %s de %i elementos, ordenado com %s em %f segundos com %lli "
+             "comparacoes e %lli swaps\n",
+             order_type[k], size, sortname, delta, comps, swaps);
+
+      fprintf(data, "%s, %i, %f, %lli, %lli\n", order_type[k], size, delta,
+              comps, swaps);
+    }
+    printf("\n\n");
+  }
+  fclose(data);
+  printf("=*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*==*=\n");
+}
+
+
+/******************************************************************************************************/
+
+
+
+
+int main(void) {
+  srand(time(NULL));
+  gerar_dados_func(&bubbleSort, "bubble");
+  gerar_dados_func(&selecao_direta, "selecao");
+  gerar_dados_func(&insertion_sort, "insertion");
+  gerar_dados_func(&shell_sort, "shell");
+  gerar_dados_func_if(&quick_sort, "quick");
+  gerar_dados_func(&heap_sort, "heap");
+  gerar_dados_func_if(&merge_sort, "merge");
+  gerar_dados_func(&contagem_de_menores, "cont");
+  gerar_dados_func(&radix_sort, "radix");
+  
 }

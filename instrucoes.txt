@@ -1,0 +1,8 @@
+Para executar o programa, execute no terminal:
+make clean
+make
+make run
+
+Serão gerados os dados de todas as funcoes de forma automática, salvando em um arquivo csv
+e printando no terminal.
+*O make clean também irá apagar os arquivos csv*
